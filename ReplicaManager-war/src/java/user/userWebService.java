@@ -5,6 +5,7 @@
  */
 package user;
 
+import insertUser.insertUserBeanLocal;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -26,7 +27,12 @@ import selectUser.selectUserBeanLocal;
 public class userWebService {
 
     @EJB
+    private insertUserBeanLocal insertUserBean;
+
+    @EJB
     private selectUserBeanLocal selectUserBean;
+    
+    
     
 
     /**
@@ -41,6 +47,7 @@ public class userWebService {
             job.add("email", u.getEmail());
             job.add("name", u.getName());
             job.add("password", u.getPassword());
+            job.add("id", u.getId());
             jo = job.build();
          }
          else {
@@ -49,4 +56,24 @@ public class userWebService {
          }
          return jo.toString();
     }
+    
+    @WebMethod(operationName = "insert")
+    public String insertUser(@WebParam(name = "email") String email, @WebParam(name = "name") String name, @WebParam(name = "password") String password) {
+         boolean result = insertUserBean.insertUser(email, name, password);
+         JsonObjectBuilder job = (JsonObjectBuilder) Json.createObjectBuilder();
+         JsonObject jo;
+         if(result){
+             job.add("email",email);
+             job.add("name", name);
+             job.add("password", password);
+             jo = job.build();
+         }
+         else {
+             job.addNull("email");
+             jo = job.build();
+         }
+         return jo.toString();
+    }
+    
+    
 }
