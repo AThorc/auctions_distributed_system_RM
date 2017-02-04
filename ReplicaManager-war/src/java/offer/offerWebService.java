@@ -5,6 +5,7 @@
  */
 package offer;
 
+import java.io.StringReader;
 import java.math.BigDecimal;
 import javax.ejb.EJB;
 import javax.json.Json;
@@ -14,8 +15,11 @@ import javax.json.JsonValue;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import model.TotalOrderMessageType;
+import model.TotalOrderMulticastMessage;
 import offers.offersBeanLocal;
 import resources.Transaction;
+import totalOrderReplicazione.totalOrderMulticastReceiver;
 
 /**
  *
@@ -31,11 +35,15 @@ public class offerWebService {
      * Web service operation
      */
     @WebMethod(operationName = "offer")
-    public String offer(@WebParam(name = "item_id") int item_id, @WebParam(name = "requested_price") float requested_price, @WebParam(name = "user_id") int user_id) {
+    //public String offer(@WebParam(name = "item_id") int item_id, @WebParam(name = "requested_price") float requested_price, @WebParam(name = "user_id") int user_id) {
+    
+    public void offer(@WebParam(name = "offerMsg") String offerMsg) {
+    
         //TODO write your implementation code here:
         System.out.println("Dentro offer di offerWService");
-        Transaction t = offersBean.offerPriceforItem(item_id, requested_price, user_id);
+        //Transaction t = offersBean.offerPriceforItem(item_id, requested_price, user_id);
 
+        /*
         JsonObjectBuilder job = (JsonObjectBuilder) Json.createObjectBuilder();
         JsonObject jo;
         job.add("user_id", t.getUserId().getId());
@@ -47,9 +55,47 @@ public class offerWebService {
         job.add("amount", t.getAmount());
         job.add("successful", t.getSuccessful());
         jo = job.build();
+        */
+        
+        //return jo.toString();
+        
+        int msgType;
+        TotalOrderMessageType mt = TotalOrderMessageType.INITIAL;
+        
+        System.out.println(offerMsg);
+        
+        JsonObject jo = Json.createReader(new StringReader(offerMsg)).readObject();
+        TotalOrderMulticastMessage msg = new TotalOrderMulticastMessage();
+        msg.setMessageId(jo.getInt("messageId"));
+        msg.setTotalOrderSequence(jo.getInt("totalOrderSequence"));
+        msgType =  jo.getInt("messageType");
+        
+        switch(msgType){
+            case 0 : mt = TotalOrderMessageType.INITIAL;
+                     break;
+            case 2 : mt = TotalOrderMessageType.FINAL;
+                     break;
+            default : System.out.println("Ricevuto messaggio non valido");
+                     break;
+        }
+        
+        
+	msg.setMessageType(mt);
+	msg.setGroupId(jo.getInt("groipId"));
+	msg.setSource(jo.getInt("source"));
+        msg.setSequence(jo.getInt("sequence"));
+        msg.setContent(jo.getString("content"));
 
-        return jo.toString();
-
+        
+        System.out.println("Sto facendo il deliver di --->" + msg.toString());
+        
+        ///------->
+        
+        totalOrderMulticastReceiver.getInstance().delivery(msg);
+        
+        
+        //return "asd";
+        
     }
     
     @WebMethod(operationName = "getTransaction")
