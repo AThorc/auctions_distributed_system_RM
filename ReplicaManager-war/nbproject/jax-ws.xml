@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jax-ws xmlns="http://www.netbeans.org/ns/jax-ws/1">
   <services>
+    <service name="transactionWebService">
+      <implementation-class>transaction.transactionWebService</implementation-class>
+    </service>
     <service name="userWebService">
       <implementation-class>user.userWebService</implementation-class>
-    </service>
-    <service name="itemWebService">
-      <implementation-class>items.itemWebService</implementation-class>
     </service>
     <service name="offerWebService">
       <implementation-class>offer.offerWebService</implementation-class>
     </service>
-    <service name="transactionWebService">
-      <implementation-class>transaction.transactionWebService</implementation-class>
+    <service name="itemWebService">
+      <implementation-class>items.itemWebService</implementation-class>
     </service>
   </services>
   <clients>
@@ -36,6 +36,38 @@
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
           <wsimport-option-value>http://localhost:8080/FrontEnd-war/prTsWebService?wsdl</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xnocompile</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xendorsed</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
+        </wsimport-option>
+      </wsimport-options>
+    </client>
+    <client name="heartBeatReceiverWebService">
+      <wsdl-url>http://localhost:8080/FrontEnd-war/heartBeatReceiverWebService?wsdl</wsdl-url>
+      <local-wsdl-file>localhost_8080/FrontEnd-war/heartBeatReceiverWebService.wsdl</local-wsdl-file>
+      <package-name>heartbeatreceiver</package-name>
+      <catalog-file>catalog.xml</catalog-file>
+      <wsimport-options>
+        <wsimport-option>
+          <wsimport-option-name>extension</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>verbose</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>fork</wsimport-option-name>
+          <wsimport-option-value>false</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>wsdlLocation</wsimport-option-name>
+          <wsimport-option-value>http://localhost:8080/FrontEnd-war/heartBeatReceiverWebService?wsdl</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xnocompile</wsimport-option-name>

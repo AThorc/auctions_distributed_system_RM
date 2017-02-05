@@ -10,10 +10,10 @@
         <data xmlns="http://www.netbeans.org/ns/web-project/3">
             <name>ReplicaManager-war</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
-            <explicit-platform explicit-source-supported="true"/>
             <web-module-libraries>
                 <library dirs="100">
                     <file>${reference.ReplicaManager-ejb.dist}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${file.reference.tesinaH_util.jar}</file>
@@ -33,6 +33,10 @@
                 </library>
                 <library dirs="200">
                     <file>${file.reference.gson-2.8.0.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.gson-2.8.0.jar-1}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

@@ -19,19 +19,19 @@
             <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
         </taskdef>
     </target>
+    <target name="wsgen-transactionWebService" depends="wsgen-init">
+        <copy todir="${build.classes.dir}/META-INF">
+            <fileset dir="${webinf.dir}" includes="wsit-transaction.transactionWebService.xml"/>
+        </copy>
+        <wsgen sourcedestdir="${build.generated.sources.dir}/jax-ws" resourcedestdir="${build.generated.sources.dir}/jax-ws/resources/" destdir="${build.generated.sources.dir}/jax-ws" verbose="true" keep="true" genwsdl="true" sei="transaction.transactionWebService" xendorsed="true">
+            <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
+        </wsgen>
+    </target>
     <target name="wsgen-userWebService" depends="wsgen-init">
         <copy todir="${build.classes.dir}/META-INF">
             <fileset dir="${webinf.dir}" includes="wsit-user.userWebService.xml"/>
         </copy>
         <wsgen sourcedestdir="${build.generated.sources.dir}/jax-ws" resourcedestdir="${build.generated.sources.dir}/jax-ws/resources/" destdir="${build.generated.sources.dir}/jax-ws" verbose="true" keep="true" genwsdl="true" sei="user.userWebService" xendorsed="true">
-            <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
-        </wsgen>
-    </target>
-    <target name="wsgen-itemWebService" depends="wsgen-init">
-        <copy todir="${build.classes.dir}/META-INF">
-            <fileset dir="${webinf.dir}" includes="wsit-items.itemWebService.xml"/>
-        </copy>
-        <wsgen sourcedestdir="${build.generated.sources.dir}/jax-ws" resourcedestdir="${build.generated.sources.dir}/jax-ws/resources/" destdir="${build.generated.sources.dir}/jax-ws" verbose="true" keep="true" genwsdl="true" sei="items.itemWebService" xendorsed="true">
             <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
         </wsgen>
     </target>
@@ -43,11 +43,11 @@
             <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
         </wsgen>
     </target>
-    <target name="wsgen-transactionWebService" depends="wsgen-init">
+    <target name="wsgen-itemWebService" depends="wsgen-init">
         <copy todir="${build.classes.dir}/META-INF">
-            <fileset dir="${webinf.dir}" includes="wsit-transaction.transactionWebService.xml"/>
+            <fileset dir="${webinf.dir}" includes="wsit-items.itemWebService.xml"/>
         </copy>
-        <wsgen sourcedestdir="${build.generated.sources.dir}/jax-ws" resourcedestdir="${build.generated.sources.dir}/jax-ws/resources/" destdir="${build.generated.sources.dir}/jax-ws" verbose="true" keep="true" genwsdl="true" sei="transaction.transactionWebService" xendorsed="true">
+        <wsgen sourcedestdir="${build.generated.sources.dir}/jax-ws" resourcedestdir="${build.generated.sources.dir}/jax-ws/resources/" destdir="${build.generated.sources.dir}/jax-ws" verbose="true" keep="true" genwsdl="true" sei="items.itemWebService" xendorsed="true">
             <classpath path="${java.home}/../lib/tools.jar:${build.classes.dir}:${j2ee.platform.wsgen.classpath}:${javac.classpath}"/>
         </wsgen>
     </target>
@@ -83,5 +83,21 @@
         <delete dir="${build.generated.sources.dir}/jax-ws/webservtotalorder"/>
         <delete dir="${build.generated.dir}/jax-wsCache/prTsWebService"/>
     </target>
-    <target name="wsimport-client-generate" depends="wsimport-client-prTsWebService"/>
+    <target name="wsimport-client-heartBeatReceiverWebService" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService" destdir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService" wsdl="${basedir}/${conf-dir}xml-resources/web-service-references/heartBeatReceiverWebService/wsdl/localhost_8080/FrontEnd-war/heartBeatReceiverWebService.wsdl" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/FrontEnd-war/heartBeatReceiverWebService?wsdl" xnocompile="true" xendorsed="true">
+            <depends file="${basedir}/${conf-dir}xml-resources/web-service-references/heartBeatReceiverWebService/wsdl/localhost_8080/FrontEnd-war/heartBeatReceiverWebService.wsdl"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-heartBeatReceiverWebService" depends="-init-project">
+        <delete dir="${build.generated.sources.dir}/jax-ws/heartbeatreceiver"/>
+        <delete dir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-prTsWebService, wsimport-client-heartBeatReceiverWebService"/>
 </project>
