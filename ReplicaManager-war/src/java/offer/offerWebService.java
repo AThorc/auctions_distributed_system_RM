@@ -59,7 +59,7 @@ public class offerWebService {
         
         //return jo.toString();
         
-        int msgType;
+        String msgType;
         TotalOrderMessageType mt = TotalOrderMessageType.INITIAL;
         
         System.out.println(offerMsg);
@@ -67,13 +67,13 @@ public class offerWebService {
         JsonObject jo = Json.createReader(new StringReader(offerMsg)).readObject();
         TotalOrderMulticastMessage msg = new TotalOrderMulticastMessage();
         msg.setMessageId(jo.getInt("messageId"));
-        msg.setTotalOrderSequence(jo.getInt("totalOrderSequence"));
-        msgType =  jo.getInt("messageType");
+        msg.setTotalOrderSequence(jo.getInt("sequence"));
+        msgType =  jo.getString("messageType");
         
         switch(msgType){
-            case 0 : mt = TotalOrderMessageType.INITIAL;
+            case "INITIAL" : mt = TotalOrderMessageType.INITIAL;
                      break;
-            case 2 : mt = TotalOrderMessageType.FINAL;
+            case "FINAL" : mt = TotalOrderMessageType.FINAL;
                      break;
             default : System.out.println("Ricevuto messaggio non valido");
                      break;
@@ -81,7 +81,7 @@ public class offerWebService {
         
         
 	msg.setMessageType(mt);
-	msg.setGroupId(jo.getInt("groipId"));
+	msg.setGroupId(jo.getInt("groupId"));
 	msg.setSource(jo.getInt("source"));
         msg.setSequence(jo.getInt("sequence"));
         msg.setContent(jo.getString("content"));

@@ -40,6 +40,7 @@ public class offersBean implements offersBeanLocal {
         if(!result.isEmpty()){ 
             t = result.get(0);
             if(t.getAmount()<requested_price){
+                System.out.println("Aggiornamento offerta: item id: " + item_id + " offer: " + requested_price + " user id: " + user_id);
                 Query query2 = entitymanager.createQuery("UPDATE Transaction SET amount = :requested_price, userId = :user_id, timestamp = :tsp WHERE itemId = :item_id");
                 query2.setParameter("requested_price", requested_price);
                 query2.setParameter("item_id", entitymanager.find(Item.class, item_id));
@@ -50,7 +51,7 @@ public class offersBean implements offersBeanLocal {
                 t.setUserId(entitymanager.find(User.class, user_id));
                 t.setAmount(requested_price);
                 
-            } 
+            }else System.out.println("Offerta troppo bassa. In memoria una più alta"); 
         }
         
         else {
@@ -62,6 +63,7 @@ public class offersBean implements offersBeanLocal {
             t.setItemId(entitymanager.find(Item.class, item_id));
             entitymanager.persist(t);
             entitymanager.getTransaction().commit();
+            System.out.println("Prima transazione creata: " + t.toString());
         }
         
         entitymanager.close();
@@ -71,7 +73,7 @@ public class offersBean implements offersBeanLocal {
     
     public Transaction getTransaction(int item_id){
 
-        System.out.println("Dentro offerPrice REPLICA MANAGER");
+        System.out.println("Dentro offerPrice REPLICA MANAGER - Thread invoked");
         EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "tesina_persistence" );
         EntityManager entitymanager = emfactory.createEntityManager( );
         entitymanager.getTransaction( ).begin( );

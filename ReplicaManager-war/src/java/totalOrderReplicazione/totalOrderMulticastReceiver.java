@@ -25,6 +25,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import offers.offersBeanLocal;
 
+
 public class totalOrderMulticastReceiver {
 
     offersBeanLocal offersBean = lookupoffersBeanLocal();
@@ -128,12 +129,12 @@ public class totalOrderMulticastReceiver {
     */
 
     public void replyProposedTs(String msg) {
-    
-        proposedTs(msg);
+        System.out.println("TotalOrderReceiver (id" + myid + ") replying with msg: " + msg);
+        proposed(msg);
     }
 
     public void delivery(IMessage message) {
-        synchronized (_mutex) {
+        //synchronized (_mutex) {
             TotalOrderMulticastMessage tomm = (TotalOrderMulticastMessage) message;
             int groupId;
             int sequence;
@@ -155,9 +156,13 @@ public class totalOrderMulticastReceiver {
             priorityQueue = holdbackQueueTable.get(groupId);
             messageType = tomm.getMessageType();
             sequence = groupLastSequence.get(groupId);
+            
+            System.out.println("TotalOrderReceiver (id" + myid + ") received msg: " + tomm.toString());
+            System.out.println("TotalOrderReceiver (id" + myid + ") priority Queue size: " + priorityQueue.size());
 
             //System.out.println("receive message: "+ tomm);
             if (messageType == TotalOrderMessageType.INITIAL) {
+                System.out.println("TotalOrderReceiver (id" + myid + ") received INITIAL msg.");
                 TotalOrderMulticastMessage reply;
                 sequence += 1;
                 groupLastSequence.put(groupId, sequence);
@@ -170,12 +175,15 @@ public class totalOrderMulticastReceiver {
                 reply.setMessageId(tomm.getMessageId());
                 //System.out.println("reply message" + reply);
                 //basicMulticast.reply(groupId, tomm.getSource(), reply);
-                replyProposedTs(reply.toString());
+                
 
                 tomm.setSequence(sequence);
                 priorityQueue.add(tomm);
                 Collections.sort(priorityQueue);
+                System.out.println("TotalOrderReceiver (id" + myid + ") priority Queue size (after add): " + priorityQueue.size());
+                replyProposedTs(reply.toString());
             } else if (messageType == TotalOrderMessageType.PROPOSAL) {
+                System.out.println("TotalOrderReceiver (id" + myid + ") received PROPOSAL msg. Something went wrong.");
                 List<Integer> cachedSequence;
                 Map<Integer, List<Integer>> cachedSequenceTable;
                 int messageId = tomm.getMessageId();
@@ -208,9 +216,12 @@ public class totalOrderMulticastReceiver {
                 }
 
             } else if (messageType == TotalOrderMessageType.FINAL) {
+                System.out.println("TotalOrderReceiver (id" + myid + ") received FINAL msg. Will deliver some msgs soon.");
                 int source = tomm.getSource();
                 int mid = tomm.getMessageId();
+                System.out.println("Priority Queue Size: " + priorityQueue.size());
                 for (TotalOrderMulticastMessage entry : priorityQueue) {
+                    System.out.println("Dentro for delivery FINAL - TO Receiver");
                     int entryMID = entry.getMessageId();
                     int entrySource = entry.getSource();
                     if (entryMID == mid && entrySource == source) {
@@ -235,6 +246,7 @@ public class totalOrderMulticastReceiver {
                  */
 
                 while (priorityQueue.isEmpty() == false) {
+                    System.out.println("Dentro while delivery FINAL - TO Receiver");
                     TotalOrderMulticastMessage entry = priorityQueue.get(0);
                     //System.out.println(entry);
                     if (entry == null || entry.isDeliverable() == false) {
@@ -248,31 +260,29 @@ public class totalOrderMulticastReceiver {
                     }
                 }
             }
-        }
+        //} fine synch mytex
     }
     
     
     public void prepareAndDoOffer(String deliverableMsg){
         //SPACCHETTAMENTO DOPPIO
+        System.out.println("TotalOrderReceiver (id" + myid + ") delivering msg: " + deliverableMsg);
         JsonObject jo = Json.createReader(new StringReader(deliverableMsg)).readObject();       
         String content = jo.getString("content");
         
         JsonObject jo2 = Json.createReader(new StringReader(content)).readObject();
-        int item_id = jo2.getInt("item_id");
-        float requested_price = (float)jo2.getJsonNumber("amount").doubleValue();
-        int user_id = jo2.getInt("user_id");
+        int item_id = Integer.parseInt(jo2.getString("item_id"));
+        float requested_price = (float)jo2.getJsonNumber("requestedPrice").doubleValue();
+        int user_id = Integer.parseInt(jo2.getString("user_id"));
         offersBean.offerPriceforItem(item_id, requested_price, user_id);
         
         
     }
     
     
-
-    private static void proposedTs(java.lang.String proposedTs) {
-        webservtotalorder.PrTsWebService_Service service = new webservtotalorder.PrTsWebService_Service();
-        webservtotalorder.PrTsWebService port = service.getPrTsWebServicePort();
-        port.proposedTs(proposedTs);
-    }
+/****************************************************************************/
+    
+    
 
     private offersBeanLocal lookupoffersBeanLocal() {
         try {
@@ -283,6 +293,22 @@ public class totalOrderMulticastReceiver {
             throw new RuntimeException(ne);
         }
     }
+
+    /*private static void proposedTs(java.lang.String proposedTs) {
+        webservtotalorder.PrTsWebService_Service service = new webservtotalorder.PrTsWebService_Service();
+        webservtotalorder.PrTsWebService port = service.getPrTsWebServicePort();
+        port.proposedTs(proposedTs);
+    }*/
+
+    private static void proposed(java.lang.String proposedTs) {
+        webservtotalorder.PrTsWebService_Service service = new webservtotalorder.PrTsWebService_Service();
+        webservtotalorder.PrTsWebService port = service.getPrTsWebServicePort();
+        port.proposed(proposedTs);
+    }
+
+    
+    
+    
 
 
 }

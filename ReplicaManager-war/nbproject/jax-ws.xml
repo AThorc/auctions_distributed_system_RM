@@ -7,11 +7,11 @@
     <service name="itemWebService">
       <implementation-class>items.itemWebService</implementation-class>
     </service>
-    <service name="transactionWebService">
-      <implementation-class>transaction.transactionWebService</implementation-class>
-    </service>
     <service name="offerWebService">
       <implementation-class>offer.offerWebService</implementation-class>
+    </service>
+    <service name="transactionWebService">
+      <implementation-class>transaction.transactionWebService</implementation-class>
     </service>
   </services>
   <clients>

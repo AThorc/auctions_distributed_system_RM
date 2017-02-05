@@ -4,21 +4,21 @@
 <xsd:import namespace="http://webservTotalOrder/" schemaLocation="http://localhost:8080/FrontEnd-war/prTsWebService?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="proposedTs">
-<part name="parameters" element="tns:proposedTs"/>
+<message name="proposed">
+<part name="parameters" element="tns:proposed"/>
 </message>
-<message name="proposedTsResponse">
-<part name="parameters" element="tns:proposedTsResponse"/>
+<message name="proposedResponse">
+<part name="parameters" element="tns:proposedResponse"/>
 </message>
 <portType name="prTsWebService">
-<operation name="proposedTs">
-<input wsam:Action="http://webservTotalOrder/prTsWebService/proposedTsRequest" message="tns:proposedTs"/>
-<output wsam:Action="http://webservTotalOrder/prTsWebService/proposedTsResponse" message="tns:proposedTsResponse"/>
+<operation name="proposed">
+<input wsam:Action="http://webservTotalOrder/prTsWebService/proposedRequest" message="tns:proposed"/>
+<output wsam:Action="http://webservTotalOrder/prTsWebService/proposedResponse" message="tns:proposedResponse"/>
 </operation>
 </portType>
 <binding name="prTsWebServicePortBinding" type="tns:prTsWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="proposedTs">
+<operation name="proposed">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
