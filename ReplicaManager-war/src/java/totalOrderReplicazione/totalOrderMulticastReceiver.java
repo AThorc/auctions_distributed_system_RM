@@ -150,6 +150,7 @@ public class totalOrderMulticastReceiver {
 
     public void delivery(IMessage message) {
         //synchronized (_mutex) {
+        synchronized(this){
             TotalOrderMulticastMessage tomm = (TotalOrderMulticastMessage) message;
             int groupId;
             int sequence;
@@ -275,7 +276,7 @@ public class totalOrderMulticastReceiver {
                     }
                 }
             }
-        //} fine synch mytex
+        } //fine synch mytex
     }
     
     

@@ -7,7 +7,9 @@ package heartBeatSender;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-/*
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -25,8 +27,14 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
         //Thread t = new Thread(t1);
         //t.start();
         System.out.println("Executor sta per sganciare un thread....");
-        Executor executor = Executors.newFixedThreadPool(1);
-        executor.execute(t1);
+        //Executor executor = Executors.newFixedThreadPool(1);
+        //executor.execute(t1);
+        
+        ScheduledExecutorService scheduler;
+        scheduler = Executors.newScheduledThreadPool(5);
+        scheduler.schedule(t1, 0, TimeUnit.SECONDS);
+        
+        
         System.out.println("Thread sganciato");
 
     }
@@ -34,4 +42,3 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 }
-*/

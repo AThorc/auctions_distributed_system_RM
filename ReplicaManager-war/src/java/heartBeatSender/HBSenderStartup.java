@@ -16,6 +16,8 @@ import javax.servlet.annotation.WebListener;
  *
  * @author alessandrotorcetta
  */
+
+/*
 @WebListener
 public class HBSenderStartup implements ServletContextListener {
 
@@ -26,15 +28,17 @@ public class HBSenderStartup implements ServletContextListener {
         System.out.println("Startup del Thread, schedulazione in corso...");
         heartBeatSender h1 = new heartBeatSender();
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(h1, 0, 30, TimeUnit.SECONDS); // Schedule to run every minute.
+        scheduler.schedule(h1, 0, TimeUnit.SECONDS);// Schedule to run every minute.
         System.out.println("Startup del Thread, Thread AVVIATO");
        
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent event) {
+        System.out.println("Distruggo il THREAD");
         scheduler.shutdown(); // Important! This stops the thread.
     }
 
 }
+*/
     
