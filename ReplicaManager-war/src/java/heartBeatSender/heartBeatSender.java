@@ -6,8 +6,12 @@
 package heartBeatSender;
 
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.ws.BindingProvider;
+import netConf.NetworkConfigurator;
+import netConf.NetworkNode;
 
 /**
  *
@@ -44,7 +48,21 @@ public class heartBeatSender implements Runnable{
     private static void heartBeatReceive(java.lang.String heartBeat) {
         heartbeatreceiver.HeartBeatReceiverWebService_Service service = new heartbeatreceiver.HeartBeatReceiverWebService_Service();
         heartbeatreceiver.HeartBeatReceiverWebService port = service.getHeartBeatReceiverWebServicePort();
-        port.heartBeatReceive(heartBeat);
+        //port.heartBeatReceive(heartBeat);
+        
+        BindingProvider bindingProvider; //classe che gestisce il cambio di indirizzo quando il webservice client deve riferirsi a webservice che stanno su macchine diverse
+        bindingProvider = (BindingProvider) port;
+
+        for(Iterator it = NetworkConfigurator.getInstance(true).getReplicas().listIterator(); it.hasNext();){
+            NetworkNode n = (NetworkNode) it.next();
+            
+            bindingProvider.getRequestContext().put(
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                "http://"+n.getIp()+":"+n.getPort()+"/FrontEnd-war/heartBeatReceiverWebService"
+            );
+            port.heartBeatReceive(heartBeat);
+        }
+        
     }
     
 }

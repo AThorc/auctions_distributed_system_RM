@@ -23,6 +23,9 @@ import javax.json.JsonObject;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.xml.ws.BindingProvider;
+import netConf.NetworkConfigurator;
+import netConf.NetworkNode;
 import offers.offersBeanLocal;
 
 
@@ -58,7 +61,7 @@ public class totalOrderMulticastReceiver {
             myconfig  = s.nextLine();
             //rmconfig = s.nextLine();
             */
-            
+            /*
             String myconfig = "2 127.0.0.1 8080 RM1 1";
             String[] aux = myconfig.split(" ");
             
@@ -70,6 +73,18 @@ public class totalOrderMulticastReceiver {
             myname = aux[3];
             mygroup = Integer.parseInt(aux[4]);
             mygroupsize = 2;
+            */
+            NetworkConfigurator nc = NetworkConfigurator.getInstance(true);
+            NetworkNode nn = nc.getMyself();
+            
+            myid = nn.getId();
+            myip = nn.getIp();
+            myport = nn.getPort();
+            myname = nn.getName();
+            mygroup = 1;
+            mygroupsize = nc.getReplicas().size()+1;
+            
+            
             
             System.out.println("MIO ID-->" + myid + "MIO IP--->" + myip + "MIO NOME--->" + myname);
             
@@ -303,7 +318,22 @@ public class totalOrderMulticastReceiver {
     private static void proposed(java.lang.String proposedTs) {
         webservtotalorder.PrTsWebService_Service service = new webservtotalorder.PrTsWebService_Service();
         webservtotalorder.PrTsWebService port = service.getPrTsWebServicePort();
-        port.proposed(proposedTs);
+        //port.proposed(proposedTs);
+        
+        BindingProvider bindingProvider; //classe che gestisce il cambio di indirizzo quando il webservice client deve riferirsi a webservice che stanno su macchine diverse
+        bindingProvider = (BindingProvider) port;
+
+        for(Iterator it = NetworkConfigurator.getInstance(true).getReplicas().listIterator(); it.hasNext();){
+            NetworkNode n = (NetworkNode) it.next();
+            
+            bindingProvider.getRequestContext().put(
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                "http://"+n.getIp()+":"+n.getPort()+"/FrontEnd-war/prTsWebService"
+            );
+            port.proposed(proposedTs);
+        }
+        
+        
     }
 
     
