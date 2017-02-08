@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 
 import javax.annotation.PostConstruct;
+import javax.ejb.AccessTimeout;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.ws.BindingProvider;
@@ -40,7 +42,7 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
     
     
     @PostConstruct
-    private void theMainMethod() {
+    public void theMainMethod() {
         heartBeatSender t1 = new heartBeatSender();
         //Thread t = new Thread(t1);
         //t.start();
@@ -60,8 +62,14 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-
+    @Schedule(second="5/5", persistent=true)
+    //@AccessTimeout(value=5000)
     private void init() {
+        /*try {
+            Thread.sleep(30000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(startupHBSenderBean.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
          while(true){
             System.out.println("Sono heartBeatSender WebService");
             //GregorianCalendar g = new GregorianCalendar();
@@ -81,12 +89,12 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
                  Logger.getLogger(startupHBSenderBean.class.getName()).log(Level.SEVERE, null, ex);
              }
             
-        }   //while
+        } 
     }
 
-    private void heartBeatReceive(java.lang.String heartBeat) {
+    /*private void heartBeatReceive(java.lang.String heartBeat) {
         System.out.println("Sto per spedire L'hearBeat a tutti i FRONTEND");
-        heartbeatreceiver.HeartBeatReceiverWebService_Service service = new heartbeatreceiver.HeartBeatReceiverWebService_Service();
+        service = new heartbeatreceiver.HeartBeatReceiverWebService_Service();
         heartbeatreceiver.HeartBeatReceiverWebService port = service.getHeartBeatReceiverWebServicePort();
         //port.heartBeatReceive(heartBeat);
         
@@ -103,6 +111,29 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
             );
             port.heartBeatReceive(heartBeat);
         }
+    }*/
+
+    private void heartBeatReceive(java.lang.String heartBeat) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        heartbeatreceiver.HeartBeatReceiverWebService port = service.getHeartBeatReceiverWebServicePort();
+        
+        BindingProvider bindingProvider; //classe che gestisce il cambio di indirizzo quando il webservice client deve riferirsi a webservice che stanno su macchine diverse
+        bindingProvider = (BindingProvider) port;
+
+        for(Iterator it = NetworkConfigurator.getInstance(true).getFrontends().listIterator(); it.hasNext();){
+           // System.out.println("Sto per spedire L'hearBeat a tutti i FRONTEND");
+            NetworkNode n = (NetworkNode) it.next();
+            System.out.println("INVIO HEARTBEAT AL NODO--->" + n.getId());
+            bindingProvider.getRequestContext().put(
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                "http://"+n.getIp()+":"+n.getPort()+"/FrontEnd-war/heartBeatReceiverWebService"
+            );
+            port.heartBeatReceive(heartBeat);
+        }
+
     }
+    
+    
 
 }

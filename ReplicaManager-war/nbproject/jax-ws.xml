@@ -13,9 +13,6 @@
     <service name="itemWebService">
       <implementation-class>items.itemWebService</implementation-class>
     </service>
-    <service name="heartBeatSenderWebService">
-      <implementation-class>hbSender.heartBeatSenderWebService</implementation-class>
-    </service>
   </services>
   <clients>
     <client name="prTsWebService">
