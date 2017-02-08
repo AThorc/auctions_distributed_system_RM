@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
-
+/*
 @Startup
 @Singleton
 
@@ -31,8 +31,8 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
         //executor.execute(t1);
         
         ScheduledExecutorService scheduler;
-        scheduler = Executors.newScheduledThreadPool(5);
-        scheduler.schedule(t1, 0, TimeUnit.SECONDS);
+        //scheduler = Executors.newScheduledThreadPool(5);
+        //scheduler.schedule(t1, 0, TimeUnit.SECONDS);
         
         
         System.out.println("Thread sganciato");
@@ -42,3 +42,4 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 }
+*/
