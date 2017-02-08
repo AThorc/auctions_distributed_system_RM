@@ -7,6 +7,7 @@ package offer;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.Iterator;
 import javax.ejb.EJB;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -15,11 +16,17 @@ import javax.json.JsonValue;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceRef;
 import model.TotalOrderMessageType;
 import model.TotalOrderMulticastMessage;
+import netConf.NetworkConfigurator;
+import netConf.NetworkNode;
 import offers.offersBeanLocal;
 import resources.Transaction;
 import totalOrderReplicazione.totalOrderMulticastReceiver;
+import totalOrderReply.replyMsg;
+import webservtotalorder.PrTsWebService_Service;
 
 /**
  *
@@ -27,6 +34,9 @@ import totalOrderReplicazione.totalOrderMulticastReceiver;
  */
 @WebService(serviceName = "offerWebService")
 public class offerWebService {
+
+    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_8080/FrontEnd-war/prTsWebService.wsdl")
+    private PrTsWebService_Service service;
 
     @EJB
     private offersBeanLocal offersBean;
@@ -36,9 +46,9 @@ public class offerWebService {
      */
     @WebMethod(operationName = "offer")
     //public String offer(@WebParam(name = "item_id") int item_id, @WebParam(name = "requested_price") float requested_price, @WebParam(name = "user_id") int user_id) {
-    
-    public void offer(@WebParam(name = "offerMsg") String offerMsg) {
-    
+
+    public synchronized void offer(@WebParam(name = "offerMsg") String offerMsg) {
+
         //TODO write your implementation code here:
         System.out.println("Dentro offer di offerWService");
         //Transaction t = offersBean.offerPriceforItem(item_id, requested_price, user_id);
@@ -55,56 +65,67 @@ public class offerWebService {
         job.add("amount", t.getAmount());
         job.add("successful", t.getSuccessful());
         jo = job.build();
-        */
-        
+         */
         //return jo.toString();
-        
         String msgType;
         TotalOrderMessageType mt = TotalOrderMessageType.INITIAL;
-        
+
         System.out.println(offerMsg);
-        
+
         JsonObject jo = Json.createReader(new StringReader(offerMsg)).readObject();
         TotalOrderMulticastMessage msg = new TotalOrderMulticastMessage();
         msg.setMessageId(jo.getInt("messageId"));
         msg.setTotalOrderSequence(jo.getInt("sequence"));
-        msgType =  jo.getString("messageType");
-        
-        switch(msgType){
-            case "INITIAL" : mt = TotalOrderMessageType.INITIAL;
-                     break;
-            case "FINAL" : mt = TotalOrderMessageType.FINAL;
-                     break;
-            default : System.out.println("Ricevuto messaggio non valido");
-                     break;
-        }
-        
-        
-	msg.setMessageType(mt);
-	msg.setGroupId(jo.getInt("groupId"));
-	msg.setSource(jo.getInt("source"));
-        msg.setSequence(jo.getInt("sequence"));
-        msg.setContent(jo.getString("content"));
+        msgType = jo.getString("messageType");
 
-        
-        System.out.println("Sto facendo il deliver di --->" + msg.toString());
-        
-        ///------->
-        
-        totalOrderMulticastReceiver.getInstance().delivery(msg);
-        
-        
+        switch (msgType) {
+            case "INITIAL":
+                mt = TotalOrderMessageType.INITIAL;
+                System.out.println("SONO IL RM, RICEVUTO MESSAGGIO INITIAL");
+
+                msg.setMessageType(mt);
+                msg.setGroupId(jo.getInt("groupId"));
+                msg.setSource(jo.getInt("source"));
+                msg.setSequence(jo.getInt("sequence"));
+                msg.setContent(jo.getString("content"));
+
+                System.out.println("Sto facendo il deliver di --->" + msg.toString());
+
+                ///------->
+                replyMsg r = totalOrderMulticastReceiver.getInstance().delivery(msg);
+                proposed(r.getContent(), r.getPort(), r.getIp());
+
+                break;
+            case "FINAL":
+                mt = TotalOrderMessageType.FINAL;
+                System.out.println("SONO IL RM, RICEVUTO MESSAGGIO FINAL");
+                msg.setMessageType(mt);
+                msg.setGroupId(jo.getInt("groupId"));
+                msg.setSource(jo.getInt("source"));
+                msg.setSequence(jo.getInt("sequence"));
+                msg.setContent(jo.getString("content"));
+
+                System.out.println("Sto facendo il deliver di --->" + msg.toString());
+
+                ///------->
+                totalOrderMulticastReceiver.getInstance().delivery(msg);
+
+                break;
+            default:
+                System.out.println("Ricevuto messaggio non valido");
+                break;
+        }
+
         //return "asd";
-        
     }
-    
+
     @WebMethod(operationName = "getTransaction")
     public String getTransaction(@WebParam(name = "item_id") int item_id) {
         //TODO write your implementation code here:
         System.out.println("Dentro getTransaction di offerWService");
         Transaction t = offersBean.getTransaction(item_id);
-        
-        if(t==null){
+
+        if (t == null) {
             JsonObjectBuilder job2 = (JsonObjectBuilder) Json.createObjectBuilder();
             JsonObject jo2;
             job2.addNull("id");
@@ -112,7 +133,7 @@ public class offerWebService {
             jo2 = job2.build();
             return jo2.toString();
         }
-        
+
         JsonObjectBuilder job = (JsonObjectBuilder) Json.createObjectBuilder();
         JsonObject jo;
         job.add("user_id", t.getUserId().getId());
@@ -126,6 +147,22 @@ public class offerWebService {
 
         return jo.toString();
 
+    }
+
+    private void proposed(java.lang.String proposedTs, int porta, String ip) {
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        webservtotalorder.PrTsWebService port = service.getPrTsWebServicePort();
+        //port.proposed(proposedTs);
+
+        BindingProvider bindingProvider; //classe che gestisce il cambio di indirizzo quando il webservice client deve riferirsi a webservice che stanno su macchine diverse
+        bindingProvider = (BindingProvider) port;
+
+        bindingProvider.getRequestContext().put(
+                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                "http://" + ip + ":" + porta + "/FrontEnd-war/prTsWebService"
+        );
+        port.proposed(proposedTs);
     }
 
 }
