@@ -41,5 +41,22 @@
         <delete dir="${build.generated.dir}/jax-wsCache/heartBeatReceiverWebService"/>
         <delete dir="${build.generated.sources.dir}/jax-ws/heartbeatreceiver"/>
     </target>
-    <target name="wsimport-client-generate" depends="wsimport-client-heartBeatReceiverWebService"/>
+    <target name="wsimport-client-heartBeatSenderWebService" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService"/>
+        <property name="wsdl-heartBeatSenderWebService" location="${meta.inf}/xml-resources/web-service-references/heartBeatSenderWebService/wsdl/localhost_8080/ReplicaManager-war/heartBeatSenderWebService.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService" destdir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService" wsdl="${wsdl-heartBeatSenderWebService}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/ReplicaManager-war/heartBeatSenderWebService?wsdl" xnocompile="true" xendorsed="true">
+            <depends file="${wsdl-heartBeatSenderWebService}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-heartBeatSenderWebService" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/heartBeatSenderWebService"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/hbsender"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-heartBeatReceiverWebService, wsimport-client-heartBeatSenderWebService"/>
 </project>
