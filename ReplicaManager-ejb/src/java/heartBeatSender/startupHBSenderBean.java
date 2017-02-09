@@ -22,6 +22,7 @@ import javax.ejb.AccessTimeout;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Timer;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import netConf.NetworkConfigurator;
@@ -52,7 +53,7 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
         
         
         
-        init();
+        //init();
         
         
         
@@ -62,15 +63,16 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-    @Schedule(second="5/5", persistent=true)
+    
     //@AccessTimeout(value=5000)
-    private void init() {
+    @Schedule(second = "*/5", minute = "*", hour = "*", persistent=false)
+    private void init(final Timer timer) {
         /*try {
             Thread.sleep(30000);
         } catch (InterruptedException ex) {
             Logger.getLogger(startupHBSenderBean.class.getName()).log(Level.SEVERE, null, ex);
         }*/
-         while(true){
+         //while(true){
             System.out.println("Sono heartBeatSender WebService");
             //GregorianCalendar g = new GregorianCalendar();
             //g.set(GregorianCalendar.YEAR, GregorianCalendar.MONTH, GregorianCalendar.DAY_OF_MONTH, GregorianCalendar.HOUR_OF_DAY, GregorianCalendar.MINUTE, GregorianCalendar.SECOND);
@@ -83,13 +85,13 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
                    
             String heartBeat = NetworkConfigurator.getInstance(true).getMyself().getId() + " Rm alive, ts: YEAR --->" + year + " MONTH --->" + month + " DAY -->" + day + " HOUR --->" + hour + " MIN -->" + minute + " SEC-->" +second ;
             heartBeatReceive(heartBeat);
-             try {
+             /*try {
                  Thread.sleep(5000);
              } catch (InterruptedException ex) {
                  Logger.getLogger(startupHBSenderBean.class.getName()).log(Level.SEVERE, null, ex);
              }
             
-        } 
+        } */
     }
 
     /*private void heartBeatReceive(java.lang.String heartBeat) {
@@ -116,6 +118,7 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
     private void heartBeatReceive(java.lang.String heartBeat) {
         // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
         // If the calling of port operations may lead to race condition some synchronization is required.
+        service = new heartbeatreceiver.HeartBeatReceiverWebService_Service();
         heartbeatreceiver.HeartBeatReceiverWebService port = service.getHeartBeatReceiverWebServicePort();
         
         BindingProvider bindingProvider; //classe che gestisce il cambio di indirizzo quando il webservice client deve riferirsi a webservice che stanno su macchine diverse
@@ -129,7 +132,11 @@ public class startupHBSenderBean implements startupHBSenderBeanLocal {
                 BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
                 "http://"+n.getIp()+":"+n.getPort()+"/FrontEnd-war/heartBeatReceiverWebService"
             );
-            port.heartBeatReceive(heartBeat);
+            try{
+                port.heartBeatReceive(heartBeat);
+            }catch(Exception ex){
+                System.err.println("Errore di rete");
+            }
         }
 
     }
