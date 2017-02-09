@@ -162,7 +162,13 @@ public class offerWebService {
                 BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
                 "http://" + ip + ":" + porta + "/FrontEnd-war/prTsWebService"
         );
-        port.proposed(proposedTs);
+        //port.proposed(proposedTs);
+        
+        try{
+                port.proposed(proposedTs);
+            }catch(Exception ex){
+                System.err.println("Errore di rete");
+            }
     }
 
 }

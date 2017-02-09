@@ -229,6 +229,7 @@ public class totalOrderMulticastReceiver {
         int item_id = Integer.parseInt(jo2.getString("item_id"));
         float requested_price = (float)jo2.getJsonNumber("requestedPrice").doubleValue();
         int user_id = Integer.parseInt(jo2.getString("user_id"));
+        System.out.println("ESEGUO IL RILANCIO DELL'ASTA");
         offersBean.offerPriceforItem(item_id, requested_price, user_id);
         
         
