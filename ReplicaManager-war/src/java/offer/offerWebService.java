@@ -47,7 +47,7 @@ public class offerWebService {
     @WebMethod(operationName = "offer")
     //public String offer(@WebParam(name = "item_id") int item_id, @WebParam(name = "requested_price") float requested_price, @WebParam(name = "user_id") int user_id) {
 
-    public synchronized void offer(@WebParam(name = "offerMsg") String offerMsg) {
+    public void offer(@WebParam(name = "offerMsg") String offerMsg) {
 
         //TODO write your implementation code here:
         System.out.println("Dentro offer di offerWService");

@@ -122,7 +122,7 @@ public class totalOrderMulticastReceiver {
                 holdbackQueueTable.put(groupId, new LinkedList<TotalOrderMulticastMessage>());
             }
             if (groupLastSequence.containsKey(groupId) == false) {
-                groupLastSequence.put(groupId, 0);
+                groupLastSequence.put(groupId, selfId);
             }
 
             priorityQueue = holdbackQueueTable.get(groupId);
