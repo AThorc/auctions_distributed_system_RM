@@ -30,6 +30,7 @@ public class offersBean implements offersBeanLocal {
         EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "tesina_persistence" );
         EntityManager entitymanager = emfactory.createEntityManager( );
         entitymanager.getTransaction( ).begin( );
+        entitymanager.clear();
         System.out.println("Begin offersBean  RM ---> valori di item_id ---> " + item_id + " reqPrice--> " + requested_price + " user_id --> " +user_id);
         TypedQuery<Transaction> query = (TypedQuery<Transaction>) entitymanager.createQuery("SELECT t FROM Transaction t WHERE t.itemId = :item_id", Transaction.class);
         System.out.println("Dopo query di offersBean");

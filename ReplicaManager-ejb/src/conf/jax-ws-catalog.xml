@@ -4,4 +4,6 @@
     <system systemId="http://localhost:8080/FrontEnd-war/heartBeatReceiverWebService?xsd=1" uri="wsdl/localhost_8080/FrontEnd-war/heartBeatReceiverWebService.xsd_1.xsd"/>
     <system systemId="http://localhost:8080/ReplicaManager-war/heartBeatSenderWebService?wsdl" uri="wsdl/localhost_8080/ReplicaManager-war/heartBeatSenderWebService.wsdl"/>
     <system systemId="http://localhost:8080/ReplicaManager-war/heartBeatSenderWebService?xsd=1" uri="wsdl/localhost_8080/ReplicaManager-war/heartBeatSenderWebService.xsd_1.xsd"/>
+    <system systemId="http://localhost:8080/ReplicaManager-war/paymentWebService?wsdl" uri="wsdl/localhost_8080/ReplicaManager-war/paymentWebService.wsdl"/>
+    <system systemId="http://localhost:8080/ReplicaManager-war/paymentWebService?xsd=1" uri="wsdl/localhost_8080/ReplicaManager-war/paymentWebService.xsd_1.xsd"/>
 </catalog>
