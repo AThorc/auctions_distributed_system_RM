@@ -17,11 +17,10 @@ import payments.paymentBeanLocal;
  */
 @WebService(serviceName = "payWebService")
 public class payWebService {
-@EJB
+
+    @EJB
     private paymentBeanLocal paymentBean;
 
-    
-    
     /**
      * This is a sample web service operation
      */

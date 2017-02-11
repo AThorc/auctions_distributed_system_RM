@@ -16,6 +16,8 @@ import netConf.NetworkNode;
 /**
  *
  * @author alessandrotorcetta
+ * 
+ * CLASSE RUNNABLE NON PIU UTILIZZATA. RIMPIAZZATA DA STARTUPHBSENDERBEAN.
  */
 public class heartBeatSender implements Runnable{
 

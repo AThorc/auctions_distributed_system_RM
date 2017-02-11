@@ -54,12 +54,6 @@ public class transactionWebService {
         return jab.build().toString();
         
         
-       
-        //return "bye";
-        
-        
-        //return selectTransactionsBean.selectTransactions();
-        
     }
     
 }

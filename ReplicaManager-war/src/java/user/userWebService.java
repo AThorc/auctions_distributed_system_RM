@@ -31,9 +31,6 @@ public class userWebService {
 
     @EJB
     private selectUserBeanLocal selectUserBean;
-    
-    
-    
 
     /**
      * This is a sample web service operation

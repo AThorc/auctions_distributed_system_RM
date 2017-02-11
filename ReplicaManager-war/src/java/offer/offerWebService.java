@@ -43,30 +43,15 @@ public class offerWebService {
 
     /**
      * Web service operation
+     * METODO CHE ESPONE IL WEBSERVICE PER RICEVERE MESSAGGI DI REVIE_TS E FINAL_TS.
+     *  COOPERA CON LA CLASSE GESTORE DELL'ALGORITMO ISIS LATO REPLICA totalOrderMulticastReceiver.
      */
     @WebMethod(operationName = "offer")
-    //public String offer(@WebParam(name = "item_id") int item_id, @WebParam(name = "requested_price") float requested_price, @WebParam(name = "user_id") int user_id) {
-
     public void offer(@WebParam(name = "offerMsg") String offerMsg) {
 
         //TODO write your implementation code here:
         System.out.println("Dentro offer di offerWService");
-        //Transaction t = offersBean.offerPriceforItem(item_id, requested_price, user_id);
 
-        /*
-        JsonObjectBuilder job = (JsonObjectBuilder) Json.createObjectBuilder();
-        JsonObject jo;
-        job.add("user_id", t.getUserId().getId());
-        job.add("id", t.getId());
-        
-        job.add("exist", true);
-        job.add("timestamp", t.getTimestamp().getTime());
-        job.add("item_id", t.getItemId().getId());
-        job.add("amount", t.getAmount());
-        job.add("successful", t.getSuccessful());
-        jo = job.build();
-         */
-        //return jo.toString();
         String msgType;
         TotalOrderMessageType mt = TotalOrderMessageType.INITIAL;
 
@@ -116,9 +101,10 @@ public class offerWebService {
                 break;
         }
 
-        //return "asd";
     }
 
+    /*  METODO CHE RESTITUISCE LO STATO DELL'ULTIMA OFFERTA PER UN OGGETTO IN ASTA. 
+        VIENE INVOCATO PERIODICAMENTE DAL THREAD OFFERLIVEWATCH TRAMITE OFFERBEAN*/
     @WebMethod(operationName = "getTransaction")
     public String getTransaction(@WebParam(name = "item_id") int item_id) {
         //TODO write your implementation code here:
@@ -163,12 +149,12 @@ public class offerWebService {
                 "http://" + ip + ":" + porta + "/FrontEnd-war/prTsWebService"
         );
         //port.proposed(proposedTs);
-        
-        try{
-                port.proposed(proposedTs);
-            }catch(Exception ex){
-                System.err.println("Errore di rete");
-            }
+
+        try {
+            port.proposed(proposedTs);
+        } catch (Exception ex) {
+            System.err.println("Errore di rete");
+        }
     }
 
 }
